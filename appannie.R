@@ -48,7 +48,12 @@ for (f in Sys.glob('Numbers *.csv')) {
 	
 	# legend
 	legend('topleft',
-		c(max(y1$stamp$year + 1900, na.rm=T), max(y2$stamp$year + 1900, na.rm=T), max(y3$stamp$year + 1900, na.rm=T), "Updates"),
+		c(
+			paste(paste(min(y1$stamp$year + 1900, na.rm=T), max(y1$stamp$year + 1900, na.rm=T), sep='-'), format(sum(y1$num_downloads, na.rm=T), big.mark=','), sep=':  '),
+			ifelse(sum(y2$num_downloads, na.rm=T) > 0, paste(paste(min(y2$stamp$year + 1900, na.rm=T), max(y2$stamp$year + 1900, na.rm=T), sep='-'), format(sum(y2$num_downloads, na.rm=T), big.mark=','), sep=':  '), ''),
+			ifelse(sum(y3$num_downloads, na.rm=T) > 0, paste(paste(min(y3$stamp$year + 1900, na.rm=T), max(y3$stamp$year + 1900, na.rm=T), sep='-'), format(sum(y3$num_downloads, na.rm=T), big.mark=','), sep=':  '), ''),
+			"Updates"
+		),
 		lwd=c(4,3,2,1), lty=c('solid', 'solid', 'solid', 'dotted'), col=c('blue4', 'blue', 'cornflowerblue', 'black'))
 	
 	if (to_file) {
