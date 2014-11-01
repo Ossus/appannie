@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  AppAnnie Playground
@@ -16,18 +16,18 @@ import settings as _s
 def main():
 	""" Run the whole toolchain for all accounts. """
 	
-	for account_id, account_name in _accounts().iteritems():
+	for account_id, account_name in _accounts().items():
 		
-		# CSV file per account
+		# CSV file for reviews per account
 		with open('Reviews {}.csv'.format(account_name), 'w') as comm:
 			w_comm = csv.writer(comm)
 			w_comm.writerow(["App","version","country","date","title","text","reviewer"])
 			
 			# loop apps
-			for app_id, app_name in _apps(account_id).iteritems():
-				print
-				print app_name
-				print '=========='
+			for app_id, app_name in _apps(account_id).items():
+				print()
+				print(app_name)
+				print('==========')
 				
 				# dump and print reviews
 				n = 0
@@ -36,16 +36,16 @@ def main():
 					
 					# print last 7 reviews
 					if n < 7:
-						stars = '%s%s' % (''.join([u"★" for i in xrange(rev['rating'])]), ''.join([u"☆" for i in xrange(5 - rev['rating'])]))
-						print
-						print "%s, %s  %s (%s)" % (rev['version'], stars, rev['title'], rev['country'])
-						print rev['text']
-						print "%s, %s" % (rev['date'], rev['reviewer'])
+						stars = '%s%s' % (''.join([u"★" for i in range(rev['rating'])]), ''.join([u"☆" for i in range(5 - rev['rating'])]))
+						print()
+						print("%s, %s  %s (%s)" % (rev['version'], stars, rev['title'], rev['country']))
+						print(rev['text'])
+						print("%s, %s" % (rev['date'], rev['reviewer']))
 					n += 1
 				
 				sales = _sales(account_id, app_id)
 				
-				# create CSV for sales data
+				# create CSV for sales data per app
 				with open('Numbers {}.csv'.format(app_name), 'w') as hndl:
 					w_csv = csv.writer(hndl)
 					w_csv.writerow(["date","num_downloads","num_updates","num_refunds","sales","refunds"])
@@ -65,9 +65,9 @@ def main():
 def _get(path):
 	""" Sets up a requests object, composes the URL and downloads data from
 	AppAnnie's API. """
-	assert(_s.api_key)
-	assert(_s.base_url)
-	assert(path and len(path) > 0)
+	assert _s.api_key
+	assert _s.base_url
+	assert path and len(path) > 0
 	
 	headers = {
 		'Authorization': 'Bearer {}'.format(_s.api_key),
@@ -79,7 +79,7 @@ def _get(path):
 	try:
 		r.raise_for_status()
 	except Exception as e:
-		print "Failed to download:\n%s\n%s" % (url, e)
+		print("Failed to download:\n%s\n%s" % (url, e))
 	
 	return r.json()
 
@@ -106,7 +106,7 @@ def _sales(account_id, app_id, start=None, end=None):
 	# more pages?
 	next = raw.get('next_page')
 	if next is not None:
-		print "MUST GET NEXT PAGE", next
+		print("MUST GET NEXT PAGE", next)
 	
 	return sales
 
