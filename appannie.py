@@ -4,6 +4,7 @@
 #  AppAnnie Playground
 #  Set your API key and account numbers in settings.py
 
+import io
 import csv
 import os.path
 import requests
@@ -19,7 +20,7 @@ def main():
 	for account_id, account_name in _accounts().items():
 		
 		# CSV file for reviews per account
-		with open('Reviews {}.csv'.format(account_name), 'w') as comm:
+		with io.open('Reviews {}.csv'.format(account_name), 'w', encoding='UTF-8') as comm:
 			w_comm = csv.writer(comm)
 			w_comm.writerow(["App","version","country","date","title","text","reviewer"])
 			
