@@ -66,14 +66,28 @@ for (f in Sys.glob('Numbers *.csv')) {
 	axis(4, at=c(0, max_d), labels=c(0, max_upd))
 	
 	# legend
-	legend('topleft',
-		c(
-			paste(paste(min(y1$stamp$year + 1900, na.rm=T), max(y1$stamp$year + 1900, na.rm=T), sep='-'), format(sum(y1$num_downloads, na.rm=T), big.mark=','), sep=':  '),
-			ifelse(sum(y2$num_downloads, na.rm=T) > 0, paste(paste(min(y2$stamp$year + 1900, na.rm=T), max(y2$stamp$year + 1900, na.rm=T), sep='-'), format(sum(y2$num_downloads, na.rm=T), big.mark=','), sep=':  '), ''),
-			ifelse(sum(y3$num_downloads, na.rm=T) > 0, paste(paste(min(y3$stamp$year + 1900, na.rm=T), max(y3$stamp$year + 1900, na.rm=T), sep='-'), format(sum(y3$num_downloads, na.rm=T), big.mark=','), sep=':  '), ''),
-			"Updates"
-		),
-		lwd=c(4,3,2,1), lty=c('solid', 'solid', 'solid', 'dotted'), col=c('blue4', 'blue', 'cornflowerblue', 'black'))
+	texts = c(paste(paste(min(y1$stamp$year + 1900, na.rm=T), max(y1$stamp$year + 1900, na.rm=T), sep='-'), format(sum(y1$num_downloads, na.rm=T), big.mark=','), sep=':  '))
+	widths = c(4)
+	styles = c('solid')
+	colors = c('blue4')
+	if (sum(y2$num_downloads, na.rm=T) > 0) {
+		texts[2] = paste(paste(min(y2$stamp$year + 1900, na.rm=T), max(y2$stamp$year + 1900, na.rm=T), sep='-'), format(sum(y2$num_downloads, na.rm=T), big.mark=','), sep=':  ')
+		widths[2] = 3
+		styles[2] = 'solid'
+		colors[2] = 'blue'
+	}
+	if (sum(y3$num_downloads, na.rm=T) > 0) {
+		texts[3] = paste(paste(min(y3$stamp$year + 1900, na.rm=T), max(y3$stamp$year + 1900, na.rm=T), sep='-'), format(sum(y3$num_downloads, na.rm=T), big.mark=','), sep=':  ')
+		widths[3] = 2
+		styles[3] = 'solid'
+		colors[3] = 'cornflowerblue'
+	}
+	texts[length(texts)+1] = "Updates"
+	widths[length(widths)+1] = 1
+	styles[length(styles)+1] = 'dotted'
+	colors[length(colors)+1] = 'black'
+	
+	legend('topleft', texts, lwd=widths, lty=styles, col=colors)
 	
 	if (to_file) {
 		dev.off()
