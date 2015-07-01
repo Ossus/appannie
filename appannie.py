@@ -26,8 +26,10 @@ def main():
 			
 			# loop apps
 			for app_id, app_name in _apps(account_id).items():
+				if _s.skip_apps and app_id in _s.skip_apps:
+					continue
 				print()
-				print(app_name)
+				print('{} [{}]'.format(app_name, app_id))
 				print('==========')
 				
 				# dump and print reviews
