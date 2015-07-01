@@ -6,6 +6,7 @@
 
 import io
 import csv
+import glob
 import os.path
 import requests
 import subprocess
@@ -16,6 +17,7 @@ import settings as _s
 
 def main():
 	""" Run the whole toolchain for all accounts. """
+	_clean()
 	
 	for account_id, account_name in _accounts().items():
 		
@@ -49,9 +51,13 @@ def main():
 				sales = _sales(account_id, app_id)
 				
 				# create CSV for sales data per app
-				with open('Numbers {}.csv'.format(app_name), 'w') as hndl:
+				csv_path = 'Numbers {}.csv'.format(app_name)
+				csv_exists = os.path.exists(csv_path)
+				csv_mode = 'a' if csv_exists else 'w'
+				with open(csv_path, csv_mode) as hndl:
 					w_csv = csv.writer(hndl)
-					w_csv.writerow(["date","num_downloads","num_updates","num_refunds","sales","refunds"])
+					if not csv_exists:
+						w_csv.writerow(["date","num_downloads","num_updates","num_refunds","sales","refunds"])
 					
 					for sale in sales:
 						s_date = sale.get('date')
@@ -64,6 +70,11 @@ def main():
 	if _s.run_r:
 		subprocess.call(['R', '--vanilla', '--slave', '-f', 'appannie.R'])
 
+def _clean():
+	""" Cleans old data files.
+	"""
+	for f in glob.glob('./Numbers *.csv'):
+		os.remove(f)
 
 def _get(path):
 	""" Sets up a requests object, composes the URL and downloads data from
