@@ -34,9 +34,10 @@ def main():
 				app_name = app['product_name']
 				if _s.skip_apps and app_id in _s.skip_apps:
 					continue
+				app_title = '{} ({}) [{}]'.format(app_name, ', '.join(app['devices']), app_id)
 				print()
-				print('{} [{}]'.format(app_name, app_id))
-				print('==========')
+				print(app_title)
+				print(''.join(['=' for i in range(0, len(app_title))]))
 				
 				# dump and print reviews
 				n = 0
@@ -54,8 +55,8 @@ def main():
 				
 				sales = _sales(account, app_id)
 				
-				# create CSV for sales data per app
-				csv_path = 'Numbers {}.csv'.format(app_name)
+				# create CSV for sales data per app; R will create graphs named after the filename
+				csv_path = 'Numbers {}.csv'.format(app_title)
 				csv_exists = os.path.exists(csv_path)
 				csv_mode = 'a' if csv_exists else 'w'
 				with open(csv_path, csv_mode) as hndl:

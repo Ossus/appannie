@@ -18,11 +18,15 @@ fullyear <- function(x, date_end, decreasing=F) {
 to_file = !interactive()
 
 for (f in Sys.glob('Numbers *.csv')) {
-	n = sub('.csv', '', sub('Numbers ', '', f))
 	
-	# to PNG unless interactive
+	# filename: replace "Numbers ", replace ".csv"; title: also replace " [app-id]"
+	filename = sub('.csv', '', sub('Numbers\\s+', '', f))
+	title = sub('\\s*\\[(\\d)+\\]', '', filename)
+	
+	# to PDF unless interactive
 	if (to_file) {
-		pdf(file=paste(paste('Downloads', n, Sys.Date()), 'pdf', sep='.'), width=12, height=7)
+		pdf.options(encoding='CP1250')
+		pdf(file=paste(paste('Downloads', filename, Sys.Date()), 'pdf', sep='.'), width=12, height=7)
 	}
 	
 	# read CSV and create a true date column
@@ -43,7 +47,7 @@ for (f in Sys.glob('Numbers *.csv')) {
 	
 	# daily downloads
 	par(mar=c(3,5,3,3))
-	plot(y1$nday, y1$num_downloads, type='l', main=n, xlab=NULL, xaxt='n', ylab="downloads / day", col='cornsilk4', ylim=c(0, max_d))
+	plot(y1$nday, y1$num_downloads, type='l', main=title, xlab=NULL, xaxt='n', ylab="downloads / day", col='cornsilk4', ylim=c(0, max_d))
 	axis(1, at=lbl_set$nday, labels=lbl_set$mth)
 	
 	# new year marker
