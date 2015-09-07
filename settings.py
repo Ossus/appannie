@@ -14,4 +14,4 @@ run_r = True
 skip_apps = []
 
 # API Base URL
-base_url = 'https://api.appannie.com/v1'
+base_url = 'https://api.appannie.com/v1.2'

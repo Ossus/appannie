@@ -19,7 +19,9 @@ def main():
 	""" Run the whole toolchain for all accounts. """
 	_clean()
 	
-	for account_id, account_name in _accounts().items():
+	for account in _accounts():
+		account_id = account['account_id']
+		account_name = account['account_name']
 		
 		# CSV file for reviews per account
 		with io.open('Reviews {}.csv'.format(account_name), 'w', encoding='UTF-8') as comm:
@@ -27,7 +29,9 @@ def main():
 			w_comm.writerow(["App","version","country","date","title","text","reviewer"])
 			
 			# loop apps
-			for app_id, app_name in _apps(account_id).items():
+			for app in _apps(account_id):
+				app_id = str(app['product_id'])
+				app_name = app['product_name']
 				if _s.skip_apps and app_id in _s.skip_apps:
 					continue
 				print()
@@ -36,7 +40,7 @@ def main():
 				
 				# dump and print reviews
 				n = 0
-				for rev in _reviews(account_id, app_id):
+				for rev in _reviews(account, app_id):
 					w_comm.writerow([app_name, rev['version'], rev['country'], rev['date'], _sf(rev['title']), _sf(rev['text']), _sf(rev['reviewer'])])
 					
 					# print last 7 reviews
@@ -48,7 +52,7 @@ def main():
 						print("%s, %s" % (rev['date'], rev['reviewer']))
 					n += 1
 				
-				sales = _sales(account_id, app_id)
+				sales = _sales(account, app_id)
 				
 				# create CSV for sales data per app
 				csv_path = 'Numbers {}.csv'.format(app_name)
@@ -61,8 +65,8 @@ def main():
 					
 					for sale in sales:
 						s_date = sale.get('date')
-						s_num = sale.get('units', {}).get('app')
-						s_sale = sale.get('revenue', {}).get('app')
+						s_num = sale.get('units', {}).get('product')
+						s_sale = sale.get('revenue', {}).get('product')
 						assert s_num and s_sale
 						w_csv.writerow([s_date, s_num.get('downloads'), s_num.get('updates'), s_num.get('refunds'), s_sale.get('downloads'), s_sale.get('refunds')])
 	
@@ -98,23 +102,17 @@ def _get(path):
 	return r.json()
 
 def _accounts():
-	""" Return a dictionary of account-id: account-name entries. """
+	""" Return a list of account dictionaries. """
 	raw = _get('accounts')
-	d = {}
-	for acc in raw['account_list']:
-		d[str(acc['account_id'])] = acc['account_name']
-	return d
+	return raw['accounts']
 
 def _apps(account_id):
-	raw = _get('accounts/{}/apps'.format(account_id))
-	d = {}
-	for app in raw['app_list']:
-		d[str(app['app_id'])] = app['app_name']
-	return d
+	raw = _get('accounts/{}/products'.format(account_id))
+	return raw['products']
 
-def _sales(account_id, app_id, start=None, end=None):
+def _sales(account, app_id, start=None, end=None):
 	sales = []
-	raw = _get('accounts/{}/apps/{}/sales?break_down=date'.format(account_id, app_id))
+	raw = _get('accounts/{}/products/{}/sales?break_down=date'.format(account['account_id'], app_id))
 	sales.extend(raw['sales_list'])
 	
 	# more pages?
@@ -124,7 +122,7 @@ def _sales(account_id, app_id, start=None, end=None):
 	
 	return sales
 
-def _reviews(account_id, app_id, start=None, end=None):
+def _reviews(account, app_id, start=None, end=None):
 	""" Downloads app reviews. """
 	if end is None:
 		end = date.today().isoformat()
@@ -132,8 +130,8 @@ def _reviews(account_id, app_id, start=None, end=None):
 		d_start = date.today() - timedelta(days=31)
 		start = d_start.isoformat()
 	
-	raw = _get('accounts/{}/apps/{}/reviews?break_down=date'.format(account_id, app_id))
-	return raw['review_list']
+	raw = _get('{}/{}/app/{}/reviews?break_down=date'.format(account['vertical'], account['market'], app_id))
+	return raw['reviews']
 
 def _sf(string):
 	""" Make a string CSV-safe. """
