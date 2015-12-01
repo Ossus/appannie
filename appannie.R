@@ -10,7 +10,7 @@ fullyear <- function(x, date_end, decreasing=F) {
 	start = date_end - 3600*24*(365+runavg_n)
 	year = subset(x, stamp <= date_end & stamp > start)
 	ordered = year[with(year, order(stamp, decreasing=decreasing)),]
-	latestyear = max(ordered$stamp$year)
+	latestyear = ifelse(length(ordered$stamp) > 0, max(ordered$stamp$year), 0)
 	ordered$nday = ifelse(ordered$stamp$year < latestyear, ordered$stamp$yday, ordered$stamp$yday + 365)
 	return(ordered)
 }
@@ -42,7 +42,7 @@ for (f in Sys.glob('Numbers *.csv')) {
 	
 	# create labels for the first entry of a month (entry from day 1 may be missing, so can't use stamp$mday == 1)
 	y1$mth = strftime(y1$stamp, "%b")
-	y1$prevmth = c(rep(NA,1),head(y1$mth,-1))
+	y1$prevmth = c(rep('Xxx',1),head(y1$mth,-1))
 	lbl_set = y1[y1$mth != y1$prevmth,]
 	
 	# daily downloads
