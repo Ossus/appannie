@@ -64,11 +64,16 @@ def main():
 					if not csv_exists:
 						w_csv.writerow(["date","num_downloads","num_updates","num_refunds","sales","refunds"])
 					
+					alter = _s.alter_data.get(app_id)
 					for sale in sales:
 						s_date = sale.get('date')
 						s_num = sale.get('units', {}).get('product')
 						s_sale = sale.get('revenue', {}).get('product')
 						assert s_num and s_sale
+						if alter is not None and s_date in alter.keys():
+							for a_what, a_chg in alter[s_date].items():
+								if s_num.get(a_what) == a_chg[0]:
+									s_num[a_what] = a_chg[1]
 						w_csv.writerow([s_date, s_num.get('downloads'), s_num.get('updates'), s_num.get('refunds'), s_sale.get('downloads'), s_sale.get('refunds')])
 	
 	# run R script to generate PDFs

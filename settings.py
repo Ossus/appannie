@@ -13,5 +13,9 @@ run_r = True
 # set App IDs that you want to skip (as strings!)
 skip_apps = []
 
+# manually mess with the data, format: {'app_id': {'iso-date': {'type': (from, to)}}}
+alter_data = {
+}
+
 # API Base URL
 base_url = 'https://api.appannie.com/v1.2'

@@ -33,12 +33,13 @@ for (f in Sys.glob('Numbers *.csv')) {
 	d = read.csv(f)
 	d$stamp = strptime(d$date, "%Y-%m-%d")
 	
-	# create ranges for the last 3 years; reverse order to sort by date from past to now
+	# create ranges for the last 4 years; reverse order to sort by date from past to now
 	latest = max(d$stamp)
 	y1 = fullyear(d, latest)
 	y2 = fullyear(d, latest - 3600*24*365)
 	y3 = fullyear(d, latest - 3600*24*730)
-	max_d = max(y1$num_downloads, y2$num_downloads, y3$num_downloads, na.rm=T)
+	y4 = fullyear(d, latest - 3600*24*1095)
+	max_d = max(y1$num_downloads, y2$num_downloads, y3$num_downloads, na.rm=T)	# ignore y4
 	
 	# create labels for the first entry of a month (entry from day 1 may be missing, so can't use stamp$mday == 1)
 	y1$mth = strftime(y1$stamp, "%b")
@@ -53,6 +54,10 @@ for (f in Sys.glob('Numbers *.csv')) {
 	# new year marker
 	abline(v=y1[y1$stamp$yday == 0,]$nday)
 	
+	if (nrow(y4) > 0) {
+		lines(y4$nday, y4$num_downloads, col='cornsilk1')
+		lines(y4$nday, runavg(y4$num_downloads), lwd=1, col='cadetblue')
+	}
 	if (nrow(y3) > 0) {
 		lines(y3$nday, y3$num_downloads, col='cornsilk2')
 		lines(y3$nday, runavg(y3$num_downloads), lwd=2, col='cornflowerblue')
@@ -85,6 +90,12 @@ for (f in Sys.glob('Numbers *.csv')) {
 		widths[3] = 2
 		styles[3] = 'solid'
 		colors[3] = 'cornflowerblue'
+	}
+	if (sum(y4$num_downloads, na.rm=T) > 0) {
+		texts[4] = paste(paste(min(y4$stamp$year + 1900, na.rm=T), max(y4$stamp$year + 1900, na.rm=T), sep='-'), format(sum(y4$num_downloads, na.rm=T), big.mark=','), sep=':  ')
+		widths[4] = 2
+		styles[4] = 'solid'
+		colors[4] = 'cornflowerblue'
 	}
 	texts[length(texts)+1] = "Updates"
 	widths[length(widths)+1] = 1
