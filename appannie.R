@@ -54,19 +54,21 @@ for (f in Sys.glob('Numbers *.csv')) {
 	# new year marker
 	abline(v=y1[y1$stamp$yday == 0,]$nday)
 	
-	if (nrow(y4) > 0) {
+	if (nrow(y4) >= runavg_n) {
 		lines(y4$nday, y4$num_downloads, col='cornsilk1')
 		lines(y4$nday, runavg(y4$num_downloads), lwd=1, col='cadetblue')
 	}
-	if (nrow(y3) > 0) {
+	if (nrow(y3) >= runavg_n) {
 		lines(y3$nday, y3$num_downloads, col='cornsilk2')
 		lines(y3$nday, runavg(y3$num_downloads), lwd=2, col='cornflowerblue')
 	}
-	if (nrow(y2) > 0) {
+	if (nrow(y2) >= runavg_n) {
 		lines(y2$nday, y2$num_downloads, col='cornsilk3')
 		lines(y2$nday, runavg(y2$num_downloads), lwd=3, col='blue')
 	}
-	lines(y1$nday, runavg(y1$num_downloads), lwd=4, col='blue4')
+	if (nrow(y1) >= runavg_n) {
+		lines(y1$nday, runavg(y1$num_downloads), lwd=4, col='blue4')
+	}
 	
 	# number of updates (scaled)
 	max_upd = max(d$num_updates, na.rm=T)
