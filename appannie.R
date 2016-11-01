@@ -97,7 +97,7 @@ for (f in Sys.glob('Numbers *.csv')) {
 		texts[4] = paste(paste(min(y4$stamp$year + 1900, na.rm=T), max(y4$stamp$year + 1900, na.rm=T), sep='-'), format(sum(y4$num_downloads, na.rm=T), big.mark=','), sep=':  ')
 		widths[4] = 2
 		styles[4] = 'solid'
-		colors[4] = 'cornflowerblue'
+		colors[4] = 'cadetblue'
 	}
 	texts[length(texts)+1] = "Updates"
 	widths[length(widths)+1] = 1
