@@ -20,6 +20,11 @@ def main():
 	_clean()
 	
 	for account in _accounts():
+		if 'account_id' not in account:
+			raise Exception("There is no 'account_id' in the account dictionary, did the API change?")
+		if 'account_name' not in account:
+			raise Exception("There is no 'account_name' in the account dictionary, did the API change?")
+		
 		account_id = account['account_id']
 		account_name = account['account_name']
 		
@@ -30,6 +35,8 @@ def main():
 			
 			# loop apps
 			for app in _apps(account_id):
+				if 'product_id' not in app:
+					raise Exception("There is no 'product_id' in the app dictionary, did the API change?")
 				app_id = str(app['product_id'])
 				app_name = app['product_name']
 				if _s.skip_apps and app_id in _s.skip_apps:
@@ -112,21 +119,22 @@ def _get(path):
 def _accounts():
 	""" Return a list of account dictionaries. """
 	raw = _get('accounts')
-	return raw['accounts']
+	return raw.get('accounts', [])
 
 def _apps(account_id):
 	raw = _get('accounts/{}/products'.format(account_id))
-	return raw['products']
+	return raw.get('products', [])
 
 def _sales(account, app_id, start=None, end=None):
 	sales = []
-	raw = _get('accounts/{}/products/{}/sales?break_down=date'.format(account['account_id'], app_id))
-	sales.extend(raw['sales_list'])
+	raw = _get('accounts/{}/products/{}/sales?break_down=date'.format(account.get('account_id'), app_id))
+	if 'sales_list' in raw:
+		sales.extend(raw['sales_list'])
 	
-	# more pages?
-	next = raw.get('next_page')
-	if next is not None:
-		print("MUST GET NEXT PAGE", next)
+	# TODO: more pages?
+	nxt = raw.get('next_page')
+	if nxt is not None:
+		print("MUST GET NEXT PAGE - NOT IMPLEMENTED", nxt)
 	
 	return sales
 
@@ -138,8 +146,8 @@ def _reviews(account, app_id, start=None, end=None):
 		d_start = date.today() - timedelta(days=31)
 		start = d_start.isoformat()
 	
-	raw = _get('{}/{}/app/{}/reviews?break_down=date'.format(account['vertical'], account['market'], app_id))
-	return raw['reviews']
+	raw = _get('{}/{}/app/{}/reviews?break_down=date'.format(account.get('vertical'), account.get('market'), app_id))
+	return raw.get('reviews', [])
 
 def _sf(string):
 	""" Make a string CSV-safe. """
