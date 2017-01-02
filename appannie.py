@@ -10,6 +10,7 @@ import glob
 import os.path
 import requests
 import subprocess
+import time
 from datetime import date, timedelta
 
 import settings as _s
@@ -35,6 +36,8 @@ def main():
 			
 			# loop apps
 			for app in _apps(account_id):
+				if _s.add_delay:
+					time.sleep(5)
 				if 'product_id' not in app:
 					raise Exception("There is no 'product_id' in the app dictionary, did the API change?")
 				app_id = str(app['product_id'])
@@ -155,6 +158,6 @@ def _sf(string):
 		return ''
 	return string.replace('"', '""').encode('utf-8')
 
-	
+
 if '__main__' == __name__:
 	main()

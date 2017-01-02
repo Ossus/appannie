@@ -10,6 +10,9 @@ api_key = ''
 # set to False to not run the R script that generates the graph
 run_r = True
 
+# set to True to add time delay to avoid AppAnnie Maximum calls per minute limit
+add_delay = False
+
 # set App IDs that you want to skip (as strings!)
 skip_apps = []
 
